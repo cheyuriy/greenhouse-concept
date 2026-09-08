@@ -1,0 +1,276 @@
+# Section taxonomy for a high-level design of a future SaaS product.
+# The output is the product's own documentation — purpose, domain, users,
+# features, architecture, access, infrastructure, observability, pricing and
+# analytics — complete enough that implementation can be planned from it.
+# Features stand in for "requirements": architecture depends on the feature
+# catalog, and the MVP cut (features.phasing) is decided after the catalog.
+archetype: saas-hld
+description: >-
+  A future SaaS product at high-level-design depth — purpose, domain, users,
+  features, architecture, auth, infrastructure, observability, pricing,
+  analytics.
+
+workfiles:
+  - path: 00-overview.md
+    title: Overview
+  - path: 10-domain.md
+    title: Domain
+  - path: 20-users.md
+    title: Users
+  - path: 30-features.md
+    title: Features
+  - path: 40-architecture.md
+    title: Architecture
+  - path: 50-auth.md
+    title: Authentication and access
+  - path: 60-infrastructure.md
+    title: Infrastructure
+  - path: 70-observability.md
+    title: Observability
+  - path: 80-pricing.md
+    title: Pricing and billing
+  - path: 85-analytics.md
+    title: Analytics
+  - path: 90-non-functional.md
+    title: Security and reliability
+
+sections:
+  - id: overview
+    title: Purpose and problem statement
+    workfile: 00-overview.md
+    heading: Purpose and problem statement
+    depends_on: []
+  - id: scope
+    title: Scope and non-goals
+    workfile: 00-overview.md
+    heading: Scope and non-goals
+    depends_on: [overview]
+
+  - id: domain.entities
+    title: Domain entities
+    workfile: 10-domain.md
+    heading: Domain entities
+    depends_on: [overview]
+  - id: domain.flows
+    title: Typical user flows
+    workfile: 10-domain.md
+    heading: Typical user flows
+    depends_on: [domain.entities]
+
+  - id: users.personas
+    title: User personas
+    workfile: 20-users.md
+    heading: User personas
+    depends_on: [overview]
+  - id: users.tenancy
+    title: Tenancy and user hierarchy
+    workfile: 20-users.md
+    heading: Tenancy and user hierarchy
+    depends_on: [users.personas, domain.entities]
+  - id: users.back-office
+    title: Back-office users
+    workfile: 20-users.md
+    heading: Back-office users
+    depends_on: [users.tenancy]
+
+  - id: features.catalog
+    title: Feature catalog
+    workfile: 30-features.md
+    heading: Feature catalog
+    depends_on: [domain.flows, users.personas, scope]
+  - id: features.back-office
+    title: Back-office features
+    workfile: 30-features.md
+    heading: Back-office features
+    depends_on: [users.back-office, features.catalog]
+  - id: features.programmatic
+    title: Programmatic surface (API and MCP)
+    workfile: 30-features.md
+    heading: Programmatic surface (API and MCP)
+    depends_on: [features.catalog]
+  - id: features.phasing
+    title: Phasing and MVP cut
+    workfile: 30-features.md
+    heading: Phasing and MVP cut
+    depends_on: [features.catalog, features.back-office, features.programmatic]
+
+  - id: architecture.components
+    title: Components
+    workfile: 40-architecture.md
+    heading: Components
+    depends_on: [features.catalog]
+  - id: architecture.interactions
+    title: Component interactions
+    workfile: 40-architecture.md
+    heading: Component interactions
+    depends_on: [architecture.components]
+  - id: architecture.data
+    title: Data model and storage
+    workfile: 40-architecture.md
+    heading: Data model and storage
+    depends_on: [domain.entities, architecture.components]
+  - id: architecture.integrations
+    title: Third-party integrations
+    workfile: 40-architecture.md
+    heading: Third-party integrations
+    depends_on: [architecture.components]
+
+  - id: auth.identity
+    title: Identity and sign-in
+    workfile: 50-auth.md
+    heading: Identity and sign-in
+    depends_on: [users.tenancy]
+  - id: auth.authorization
+    title: Authorization model
+    workfile: 50-auth.md
+    heading: Authorization model
+    depends_on: [auth.identity, users.tenancy]
+  - id: auth.api-access
+    title: API access
+    workfile: 50-auth.md
+    heading: API access
+    depends_on: [auth.identity, features.programmatic]
+  - id: auth.mcp-access
+    title: MCP access
+    workfile: 50-auth.md
+    heading: MCP access
+    depends_on: [auth.api-access, features.programmatic]
+
+  - id: infra.hosting
+    title: Hosting
+    workfile: 60-infrastructure.md
+    heading: Hosting
+    depends_on: [architecture.components]
+  - id: infra.deployment
+    title: Deployment
+    workfile: 60-infrastructure.md
+    heading: Deployment
+    depends_on: [infra.hosting]
+  - id: infra.environments
+    title: Environments
+    workfile: 60-infrastructure.md
+    heading: Environments
+    depends_on: [infra.deployment]
+
+  - id: observability.monitoring
+    title: Monitoring
+    workfile: 70-observability.md
+    heading: Monitoring
+    depends_on: [architecture.components, infra.hosting]
+  - id: observability.alerting
+    title: Alerting
+    workfile: 70-observability.md
+    heading: Alerting
+    depends_on: [observability.monitoring]
+
+  - id: pricing.plans
+    title: Plans and packaging
+    workfile: 80-pricing.md
+    heading: Plans and packaging
+    depends_on: [features.catalog, users.tenancy]
+  - id: pricing.billing
+    title: Billing
+    workfile: 80-pricing.md
+    heading: Billing
+    depends_on: [pricing.plans]
+
+  - id: analytics.events
+    title: Events and metrics
+    workfile: 85-analytics.md
+    heading: Events and metrics
+    depends_on: [domain.flows, features.catalog]
+  - id: analytics.pipeline
+    title: Collection pipeline
+    workfile: 85-analytics.md
+    heading: Collection pipeline
+    depends_on: [analytics.events, infra.hosting]
+
+  - id: security-compliance
+    title: Security and compliance
+    workfile: 90-non-functional.md
+    heading: Security and compliance
+    depends_on: [auth.authorization, architecture.data, infra.hosting]
+  - id: reliability
+    title: Reliability
+    workfile: 90-non-functional.md
+    heading: Reliability
+    depends_on: [architecture.components, infra.hosting]
+
+# What finalization hands over beyond SPEC.md. Each deliverable names the
+# sections that feed it: a drill on a feeding section is told what the
+# deliverable needs from it (`section guidance`) — a floor, not a ceiling —
+# and finalize writes the file once every feeding section is agreed/locked.
+# /spec-new re-verifies this list per project (drop, add, rename).
+deliverables:
+  - id: architecture-diagram
+    title: Architecture diagram
+    format: mermaid diagrams with legend and narrative
+    path: architecture-diagram.md
+    description: >-
+      Component view (services, stores, external integrations, hosting
+      boundaries) and one interaction sequence for the primary user flow;
+      legend and a short narrative under each diagram.
+    sections:
+      - architecture.components
+      - architecture.interactions
+      - architecture.data
+      - architecture.integrations
+      - infra.hosting
+  - id: domain-model
+    title: Domain model
+    format: markdown with an entity diagram
+    path: domain-model.md
+    description: >-
+      Entities with attributes and relationships, the tenancy boundary,
+      lifecycle states, and a mermaid entity diagram; the core flows walked
+      through against it.
+    sections:
+      - domain.entities
+      - domain.flows
+      - users.tenancy
+      - architecture.data
+  - id: feature-catalog
+    title: Feature catalog
+    format: markdown tables by phase
+    path: feature-catalog.md
+    description: >-
+      Every feature (user-facing, back-office, programmatic) with the persona
+      it serves, the phase it ships in, its dependencies and its pricing tier
+      — the backlog seed for implementation planning.
+    sections:
+      - users.personas
+      - features.catalog
+      - features.back-office
+      - features.programmatic
+      - features.phasing
+      - pricing.plans
+  - id: infrastructure-blueprint
+    title: Infrastructure blueprint
+    format: markdown brief for IaC generation
+    path: infrastructure-blueprint.md
+    description: >-
+      Hosting resources per environment, deployment pipeline, observability
+      stack, reliability targets and the security/compliance controls that
+      shape the infrastructure — enough to generate IaC and pipelines from.
+    sections:
+      - infra.hosting
+      - infra.deployment
+      - infra.environments
+      - observability.monitoring
+      - observability.alerting
+      - reliability
+      - security-compliance
+  - id: access-model
+    title: Access and identity model
+    format: markdown tables
+    path: access-model.md
+    description: >-
+      Identity providers and sign-in flows, roles and permissions per
+      persona, tenant isolation rules, and API/MCP credential types with
+      their scopes and lifetimes.
+    sections:
+      - auth.identity
+      - auth.authorization
+      - auth.api-access
+      - auth.mcp-access
+      - users.tenancy

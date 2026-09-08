@@ -1,0 +1,127 @@
+# Per-section drafting guidance for the saas-hld archetype.
+# Inserted as HTML comments into scaffolded workfiles; the drill loop and
+# spec-critic use these as the local definition of "complete".
+sections:
+  overview: >
+    Cover: what we are trying to do in one paragraph, the problem users have
+    today and how they cope, why this is worth building now, and the outcome
+    that would make it a success. No architecture or feature lists yet.
+  scope: >
+    Cover: what the product IS (the core job it does), what is explicitly OUT
+    with a reason, and what is deferred-not-rejected. Name the boundaries a
+    tempting adjacent feature would cross.
+  domain.entities: >
+    Cover: the core nouns of the product, their key attributes, relationships
+    and cardinalities, ownership (which tenant/user owns what), and lifecycle
+    states. A diagram or table is expected; keep it conceptual, not a schema.
+  domain.flows: >
+    Cover: the typical user journeys end to end (onboarding, the main daily
+    loop, the moments of value, offboarding), each as a numbered sequence of
+    steps naming the entities touched. Note where a flow branches by persona.
+  users.personas: >
+    Cover: each kind of user, what they hire the product for, their skill
+    level and context, how often they show up, and what "done" looks like
+    for them. Quote evidence when a source is on file.
+  users.tenancy: >
+    Cover: the tenancy model (per-user, per-organisation, workspaces, nested
+    teams), the roles inside a tenant and who may invite/remove whom, whether
+    users belong to several tenants, and how enterprise hierarchies map onto
+    it.
+  users.back-office: >
+    Cover: whether an internal back-office is needed at all, who staffs it
+    (support, ops, finance), what they need to see and do (impersonation,
+    refunds, feature flags, moderation), and the audit expectations on those
+    actions.
+  features.catalog: >
+    Cover: one subsection per feature area listing exactly what users can do,
+    each as numbered REQ-<SECTION>-<NNN> requirements with RFC-2119 keywords
+    and an Acceptance: criterion. Tie each area back to the flows and
+    personas it serves. Precision matters here.
+  features.back-office: >
+    Cover: what back-office users can do, as REQ-<SECTION>-<NNN> requirements
+    with Acceptance: criteria — customer lookup, plan changes, support tools,
+    operational switches — and which of these are self-serve for customers
+    instead.
+  features.programmatic: >
+    Cover: what is exposed to machines: the public API surface (resources and
+    operations, not endpoint detail), webhooks/events, the MCP server's tools
+    and resources, and which catalog features are API-only, UI-only, or both.
+  features.phasing: >
+    Cover: the MVP cut — which catalog, back-office and programmatic features
+    ship first, what is explicitly later, and the criteria for moving to the
+    next phase. Cite the ideas rejected or deferred by id.
+  architecture.components: >
+    Cover: the parts of the system (frontend, API, workers, data stores,
+    external services), each with its responsibility and the features it
+    serves, plus the reasoning for the split (link ADRs via why-markers).
+  architecture.interactions: >
+    Cover: how the components talk (sync calls, queues, events), the main
+    request paths and background jobs as sequence descriptions, and the
+    boundaries where failures are isolated.
+  architecture.data: >
+    Cover: how the domain entities are stored (store per entity family,
+    tenant isolation strategy, multi-region or not), data classification and
+    retention, and the migration/backup posture at HLD level.
+  architecture.integrations: >
+    Cover: every third-party service the product depends on — payments,
+    email, auth provider, LLM/API vendors, analytics — with direction of
+    data flow, failure behaviour, and the lock-in risk accepted for each.
+  auth.identity: >
+    Cover: the ways a human signs in (password, magic link, social, SSO/SAML,
+    OIDC), account creation and verification, session lifetime, MFA policy,
+    and how identity relates to tenant membership.
+  auth.authorization: >
+    Cover: the permission model (roles, scopes, resource ownership), how it
+    is enforced (per request, per tenant), default roles per persona, and
+    the rules for cross-tenant and back-office access.
+  auth.api-access: >
+    Cover: how machines authenticate to the API (API keys, OAuth clients,
+    service accounts), key scoping and rotation, rate limits per plan, and
+    how a key maps to a tenant and a permission set.
+  auth.mcp-access: >
+    Cover: how an MCP client connects (transport, OAuth flow, token
+    lifetime), how the user consents to and scopes what the client may do,
+    per-tool permission mapping, and how sessions are revoked.
+  infra.hosting: >
+    Cover: where the product runs (cloud provider, region(s), managed
+    services vs self-run), the reasoning (cost, compliance, team skills),
+    and the components-to-hosting mapping.
+  infra.deployment: >
+    Cover: how a change reaches production — build, artifact, deployment
+    mechanism, rollout strategy, rollback — and what is infrastructure as
+    code vs manual.
+  infra.environments: >
+    Cover: the environment set (dev, staging, prod, preview), what differs
+    between them (data, integrations, sizing), and how customer data is kept
+    out of non-prod.
+  observability.monitoring: >
+    Cover: the signals that show the product is healthy (metrics, traces,
+    logs) and the business signals (sign-ups, active tenants), where
+    dashboards live, and the tooling chosen.
+  observability.alerting: >
+    Cover: alert conditions with thresholds, severity levels, who is paged
+    and how, and which customer-facing failures trigger status-page updates.
+  pricing.plans: >
+    Cover: the plan tiers and what each includes (features, limits, seats),
+    the pricing dimension (per seat, per usage, flat), free/trial policy,
+    and which catalog features are gated by plan.
+  pricing.billing: >
+    Cover: how money is collected — billing provider, invoicing cadence,
+    metering of usage-based dimensions, upgrades/downgrades and proration,
+    failed-payment handling, taxes and currencies.
+  analytics.events: >
+    Cover: the product events and metrics we collect (activation, retention,
+    feature usage), the identity model for events (user, tenant, anonymous),
+    and the privacy/consent constraints on collection.
+  analytics.pipeline: >
+    Cover: how events are captured (client, server, both), the analytics
+    tooling and where data lands, retention, and who consumes it (product,
+    growth, finance).
+  security-compliance: >
+    Cover: threat model at HLD level, tenant isolation guarantees, data
+    protection and privacy obligations (GDPR, data residency), audit logging,
+    and the compliance targets (SOC 2 etc.) and when they are needed.
+  reliability: >
+    Cover: availability and performance targets per critical flow, backup
+    and restore expectations, disaster recovery posture, and what degrades
+    gracefully vs fails hard.

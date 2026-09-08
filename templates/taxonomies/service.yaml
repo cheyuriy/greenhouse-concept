@@ -1,0 +1,145 @@
+# Section taxonomy for a backend service / API specification.
+archetype: service
+description: A network service — API surface, data model, operations, SLOs.
+
+workfiles:
+  - path: 00-overview.md
+    title: Overview
+  - path: 10-users-and-jobs.md
+    title: Consumers and use cases
+  - path: 20-requirements.md
+    title: Functional requirements
+  - path: 30-architecture.md
+    title: Architecture
+  - path: 40-api-reference.md
+    title: API reference
+  - path: 50-data-model.md
+    title: Data model
+  - path: 60-auth-and-config.md
+    title: Authentication and configuration
+  - path: 90-operations.md
+    title: Operations
+
+sections:
+  - id: overview
+    title: Overview and problem statement
+    workfile: 00-overview.md
+    heading: Overview and problem statement
+    depends_on: []
+  - id: scope
+    title: Scope and non-goals
+    workfile: 00-overview.md
+    heading: Scope and non-goals
+    depends_on: [overview]
+  - id: consumers
+    title: Consumers and use cases
+    workfile: 10-users-and-jobs.md
+    heading: Consumers and use cases
+    depends_on: [overview]
+  - id: requirements
+    title: Functional requirements
+    workfile: 20-requirements.md
+    heading: Functional requirements
+    depends_on: [consumers, scope]
+  - id: architecture
+    title: Architecture overview
+    workfile: 30-architecture.md
+    heading: Architecture overview
+    depends_on: [requirements]
+  - id: api.conventions
+    title: API conventions and versioning
+    workfile: 40-api-reference.md
+    heading: API conventions and versioning
+    depends_on: [overview]
+  - id: api.endpoints
+    title: Endpoints
+    workfile: 40-api-reference.md
+    heading: Endpoints
+    depends_on: [api.conventions]
+  - id: api.errors
+    title: Error model
+    workfile: 40-api-reference.md
+    heading: Error model
+    depends_on: [api.conventions]
+  - id: data-model
+    title: Data model and storage
+    workfile: 50-data-model.md
+    heading: Data model and storage
+    depends_on: [requirements]
+  - id: auth
+    title: Authentication and authorization
+    workfile: 60-auth-and-config.md
+    heading: Authentication and authorization
+    depends_on: [api.conventions]
+  - id: config
+    title: Configuration
+    workfile: 60-auth-and-config.md
+    heading: Configuration
+    depends_on: [overview]
+  - id: slo
+    title: SLOs and capacity
+    workfile: 90-operations.md
+    heading: SLOs and capacity
+    depends_on: [requirements]
+  - id: observability
+    title: Observability
+    workfile: 90-operations.md
+    heading: Observability
+    depends_on: [architecture]
+  - id: security
+    title: Security
+    workfile: 90-operations.md
+    heading: Security
+    depends_on: [auth]
+  - id: deployment
+    title: Deployment and rollout
+    workfile: 90-operations.md
+    heading: Deployment and rollout
+    depends_on: [architecture]
+
+# What finalization hands over beyond SPEC.md. Each deliverable names the
+# sections that feed it: a drill on a feeding section is told what the
+# deliverable needs from it (`section guidance`) — a floor, not a ceiling —
+# and finalize writes the file once every feeding section is agreed/locked.
+# /spec-new re-verifies this list per project (drop, add, rename).
+deliverables:
+  - id: api-reference
+    title: API reference
+    format: OpenAPI-shaped markdown reference
+    path: api-reference.md
+    description: >-
+      Every endpoint with method, path, auth requirement, request and
+      response schemas, error responses, pagination and versioning rules —
+      precise enough to derive an OpenAPI document or a client SDK from.
+    sections:
+      - api.conventions
+      - api.endpoints
+      - api.errors
+      - auth
+      - data-model
+  - id: data-model-reference
+    title: Data model reference
+    format: markdown with an entity diagram
+    path: data-model-reference.md
+    description: >-
+      Entities, fields with types and constraints, relationships, ownership
+      and retention, and a mermaid entity diagram; the mapping from API
+      resources to stored entities.
+    sections:
+      - data-model
+      - architecture
+      - api.endpoints
+  - id: operations-guide
+    title: Operations guide
+    format: markdown guide
+    path: operations-guide.md
+    description: >-
+      How the service is deployed, configured, observed and kept within its
+      SLOs: deployment procedure and environments, configuration and secrets,
+      dashboards and alerts, and the recovery procedure per known failure mode.
+    sections:
+      - deployment
+      - config
+      - slo
+      - observability
+      - security

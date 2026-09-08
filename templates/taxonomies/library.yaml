@@ -1,0 +1,113 @@
+# Section taxonomy for a library / SDK specification.
+archetype: library
+description: A library or SDK — public API, semantics, packaging, compatibility.
+
+workfiles:
+  - path: 00-overview.md
+    title: Overview
+  - path: 10-users-and-jobs.md
+    title: Users and jobs
+  - path: 20-requirements.md
+    title: Functional requirements
+  - path: 30-api-design.md
+    title: Public API design
+  - path: 40-internals.md
+    title: Internals
+  - path: 90-non-functional.md
+    title: Non-functional requirements
+
+sections:
+  - id: overview
+    title: Overview and problem statement
+    workfile: 00-overview.md
+    heading: Overview and problem statement
+    depends_on: []
+  - id: scope
+    title: Scope and non-goals
+    workfile: 00-overview.md
+    heading: Scope and non-goals
+    depends_on: [overview]
+  - id: users-and-jobs
+    title: Users and jobs-to-be-done
+    workfile: 10-users-and-jobs.md
+    heading: Users and jobs-to-be-done
+    depends_on: [overview]
+  - id: requirements
+    title: Functional requirements
+    workfile: 20-requirements.md
+    heading: Functional requirements
+    depends_on: [users-and-jobs, scope]
+  - id: api.surface
+    title: Public API surface
+    workfile: 30-api-design.md
+    heading: Public API surface
+    depends_on: [requirements]
+  - id: api.semantics
+    title: Semantics and error handling
+    workfile: 30-api-design.md
+    heading: Semantics and error handling
+    depends_on: [api.surface]
+  - id: internals
+    title: Internal architecture
+    workfile: 40-internals.md
+    heading: Internal architecture
+    depends_on: [api.surface]
+  - id: compatibility
+    title: Compatibility and versioning policy
+    workfile: 90-non-functional.md
+    heading: Compatibility and versioning policy
+    depends_on: [api.surface]
+  - id: packaging
+    title: Packaging and distribution
+    workfile: 90-non-functional.md
+    heading: Packaging and distribution
+    depends_on: []
+  - id: performance
+    title: Performance characteristics
+    workfile: 90-non-functional.md
+    heading: Performance characteristics
+    depends_on: [requirements]
+
+# What finalization hands over beyond SPEC.md. Each deliverable names the
+# sections that feed it: a drill on a feeding section is told what the
+# deliverable needs from it (`section guidance`) — a floor, not a ceiling —
+# and finalize writes the file once every feeding section is agreed/locked.
+# /spec-new re-verifies this list per project (drop, add, rename).
+deliverables:
+  - id: api-reference
+    title: Public API reference
+    format: markdown reference, one entry per public symbol
+    path: api-reference.md
+    description: >-
+      Every public type, function and option with signature, semantics,
+      errors raised, thread-safety and stability guarantees — the contract
+      users may rely on, precise enough to write docstrings and tests from.
+    sections:
+      - api.surface
+      - api.semantics
+      - compatibility
+  - id: integration-guide
+    title: Integration guide
+    format: markdown guide
+    path: integration-guide.md
+    description: >-
+      Getting started for a new user: installation per package manager,
+      the minimal working example, the three most common jobs end to end,
+      version constraints, and how to upgrade across breaking releases.
+    sections:
+      - users-and-jobs
+      - api.surface
+      - packaging
+      - compatibility
+  - id: compatibility-matrix
+    title: Compatibility and performance matrix
+    format: markdown tables
+    path: compatibility-matrix.md
+    description: >-
+      Supported runtimes, platforms and dependency version ranges; the
+      deprecation and support policy; performance envelopes with the
+      benchmarks that back them.
+    sections:
+      - compatibility
+      - packaging
+      - performance

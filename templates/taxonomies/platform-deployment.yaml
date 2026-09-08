@@ -1,0 +1,237 @@
+# Section taxonomy for deploying a third-party platform onto your own
+# infrastructure — self-hosted dbt, Prefect, CI/CD systems and the like.
+# The product is someone else's; the spec covers selection, topology,
+# integration seams, lifecycle, and operations of the deployment itself.
+archetype: platform-deployment
+description: >-
+  A third-party platform deployed on own infrastructure — selection, topology,
+  integrations, lifecycle, operations.
+
+workfiles:
+  - path: 00-overview.md
+    title: Overview
+  - path: 10-platform-and-users.md
+    title: Platform and users
+  - path: 20-requirements.md
+    title: Deployment requirements
+  - path: 30-topology.md
+    title: Topology and environments
+  - path: 40-access-and-integration.md
+    title: Access and integration
+  - path: 50-state.md
+    title: State
+  - path: 60-lifecycle.md
+    title: Lifecycle
+  - path: 90-operations.md
+    title: Operations
+
+sections:
+  - id: overview
+    title: Overview and problem statement
+    workfile: 00-overview.md
+    heading: Overview and problem statement
+    depends_on: []
+  - id: scope
+    title: Scope and non-goals
+    workfile: 00-overview.md
+    heading: Scope and non-goals
+    depends_on: [overview]
+  - id: consumers
+    title: Consumers and use cases
+    workfile: 10-platform-and-users.md
+    heading: Consumers and use cases
+    depends_on: [overview]
+  - id: platform-selection
+    title: Platform selection
+    workfile: 10-platform-and-users.md
+    heading: Platform selection
+    depends_on: [overview, consumers]
+  - id: requirements
+    title: Deployment requirements
+    workfile: 20-requirements.md
+    heading: Deployment requirements
+    depends_on: [consumers, scope, platform-selection]
+  - id: topology
+    title: Deployment topology
+    workfile: 30-topology.md
+    heading: Deployment topology
+    depends_on: [requirements]
+  - id: infra-dependencies
+    title: Infrastructure dependencies
+    workfile: 30-topology.md
+    heading: Infrastructure dependencies
+    depends_on: [topology]
+  - id: environments
+    title: Environments and promotion
+    workfile: 30-topology.md
+    heading: Environments and promotion
+    depends_on: [topology]
+  - id: networking
+    title: Networking
+    workfile: 30-topology.md
+    heading: Networking
+    depends_on: [topology]
+  - id: access.identity
+    title: Identity integration
+    workfile: 40-access-and-integration.md
+    heading: Identity integration
+    depends_on: [requirements]
+  - id: access.permissions
+    title: Access and permissions
+    workfile: 40-access-and-integration.md
+    heading: Access and permissions
+    depends_on: [access.identity, consumers]
+  - id: integrations.conventions
+    title: Integration conventions
+    workfile: 40-access-and-integration.md
+    heading: Integration conventions
+    depends_on: [requirements]
+  - id: integrations.systems
+    title: Integrated systems
+    workfile: 40-access-and-integration.md
+    heading: Integrated systems
+    depends_on: [integrations.conventions, topology]
+  - id: secrets
+    title: Secrets management
+    workfile: 40-access-and-integration.md
+    heading: Secrets management
+    depends_on: [infra-dependencies]
+  - id: config-management
+    title: Configuration management
+    workfile: 40-access-and-integration.md
+    heading: Configuration management
+    depends_on: [topology]
+  - id: state
+    title: State and storage
+    workfile: 50-state.md
+    heading: State and storage
+    depends_on: [platform-selection, topology]
+  - id: lifecycle.provisioning
+    title: Provisioning
+    workfile: 60-lifecycle.md
+    heading: Provisioning
+    depends_on: [config-management, infra-dependencies]
+  - id: lifecycle.upgrades
+    title: Upgrades
+    workfile: 60-lifecycle.md
+    heading: Upgrades
+    depends_on: [lifecycle.provisioning]
+  - id: lifecycle.rollback
+    title: Rollback
+    workfile: 60-lifecycle.md
+    heading: Rollback
+    depends_on: [lifecycle.upgrades, state]
+  - id: lifecycle.decommission
+    title: Decommissioning
+    workfile: 60-lifecycle.md
+    heading: Decommissioning
+    depends_on: [state]
+  - id: observability.monitoring
+    title: Monitoring
+    workfile: 90-operations.md
+    heading: Monitoring
+    depends_on: [topology]
+  - id: observability.alerting
+    title: Alerting
+    workfile: 90-operations.md
+    heading: Alerting
+    depends_on: [observability.monitoring]
+  - id: observability.logs
+    title: Logs
+    workfile: 90-operations.md
+    heading: Logs
+    depends_on: [topology]
+  - id: security
+    title: Security
+    workfile: 90-operations.md
+    heading: Security
+    depends_on: [access.identity, secrets]
+  - id: slo
+    title: SLOs and ownership
+    workfile: 90-operations.md
+    heading: SLOs and ownership
+    depends_on: [requirements]
+  - id: runbook
+    title: Runbook
+    workfile: 90-operations.md
+    heading: Runbook
+    depends_on: [observability.alerting, lifecycle.rollback]
+
+# What finalization hands over beyond SPEC.md. Each deliverable names the
+# sections that feed it: a drill on a feeding section is told what the
+# deliverable needs from it (`section guidance`) — a floor, not a ceiling —
+# and finalize writes the file once every feeding section is agreed/locked.
+# /spec-new re-verifies this list per project (drop, add, rename).
+deliverables:
+  - id: operator-guide
+    title: Operator guide
+    format: markdown guide
+    path: operator-guide.md
+    description: >-
+      Step-by-step handbook for the human operating the deployment: provision
+      an environment from scratch, promote a change, upgrade and roll back,
+      rotate a secret, grant and review access, decommission — plus one
+      recovery procedure per known failure mode, reachable from its alert.
+      Written for a person on call, assuming the spec is not open beside them.
+    sections:
+      - topology
+      - environments
+      - access.permissions
+      - secrets
+      - config-management
+      - lifecycle.provisioning
+      - lifecycle.upgrades
+      - lifecycle.rollback
+      - lifecycle.decommission
+      - observability.alerting
+      - runbook
+  - id: terraform-blueprint
+    title: Infrastructure-as-code blueprint
+    format: markdown brief for Terraform generation
+    path: terraform-blueprint.md
+    description: >-
+      Everything needed to generate the Terraform (or equivalent) without
+      re-reading the spec: resource inventory per environment, module
+      boundaries, variables with their per-environment values, network and
+      IAM bindings, secret references, state backend, and the manual steps
+      that deliberately stay outside IaC.
+    sections:
+      - topology
+      - infra-dependencies
+      - environments
+      - networking
+      - access.identity
+      - secrets
+      - config-management
+      - state
+      - lifecycle.provisioning
+  - id: architecture-diagram
+    title: Architecture diagram
+    format: mermaid diagram with legend and narrative
+    path: architecture-diagram.md
+    description: >-
+      One scheme of the deployed system: platform components and where each
+      runs, backing infrastructure, network boundaries and ingress, state
+      stores, and every integrated system with the direction of each
+      connection. A legend and a short walk-through of one run/job under the
+      diagram.
+    sections:
+      - topology
+      - infra-dependencies
+      - networking
+      - integrations.systems
+      - state
+  - id: integration-register
+    title: Integration and access register
+    format: markdown tables
+    path: integration-register.md
+    description: >-
+      The tabular truth of who and what connects: each integrated system with
+      endpoint, direction, auth method, credential location and owner; each
+      platform role with the IdP groups mapped to it and what it may do.
+    sections:
+      - access.identity
+      - access.permissions
+      - integrations.conventions
+      - integrations.systems
+      - secrets

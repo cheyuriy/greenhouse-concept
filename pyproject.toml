@@ -1,0 +1,58 @@
+[project]
+name = "greenhouse"
+version = "0.1.0"
+description = "Tooling for the Greenhouse Concept spec-growing workspace"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "typer>=0.12",
+    "pydantic>=2.7",
+    "ruamel.yaml>=0.18",
+    "markdown-it-py>=3.0",
+    "rich>=13.7",
+    "fastmcp>=2.0",
+]
+
+[project.scripts]
+greenhouse = "greenhouse.cli:main"
+greenhouse-mcp = "greenhouse.mcp_server:main"
+
+[project.entry-points."greenhouse.exporters"]
+noop = "greenhouse.integrations.noop:NoopExporter"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/greenhouse"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "RUF"]
+ignore = [
+    "B008",   # typer's Option/Argument-in-default is the intended idiom
+    "E501",   # long help strings and table rows are fine
+    "RUF015", # index-into-comprehension reads clearer in tests
+]
+
+[tool.greenhouse]
+# Workspace-level configuration for the greenhouse CLI.
+templates_dir = "templates"
+
+[tool.greenhouse.integrations]
+# Exporters resolved by name via entry points; see src/greenhouse/integrations/README.md.
+# Example:
+# obsidian = { vault = "~/Vaults/specs" }

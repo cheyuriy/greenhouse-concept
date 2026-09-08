@@ -1,0 +1,47 @@
+# Per-section drafting guidance for the cli-tool archetype. Inserted as HTML
+# comments into scaffolded workfiles; the drill loop and spec-critic use these
+# as the local definition of "complete".
+sections:
+  overview: >
+    Cover: the problem in one paragraph, who suffers it today and how, why now,
+    and the single-sentence promise of the tool. No solutions here.
+  scope: >
+    Cover: what is explicitly IN scope for v1, what is OUT with a reason, and
+    what is deferred-not-rejected. Non-goals prevent scope creep later.
+  users-and-jobs: >
+    Cover: each user persona, the jobs they hire this tool for, their current
+    workaround, and their tolerance for setup cost. Quote real evidence when a
+    source is on file.
+  requirements: >
+    Cover: numbered REQ-<SECTION>-<NNN> requirements with RFC-2119 keywords and
+    an Acceptance: criterion each. Group by capability. Keep design out.
+  architecture: >
+    Cover: the major components, what talks to what, key libraries/services
+    depended on, and the reasoning for the shape (link ADRs via why-markers).
+  cli.global-flags: >
+    Cover: flags every command shares, environment variables, config precedence
+    (flag > env > file > default), and output/verbosity conventions.
+  cli.commands: >
+    Cover: one subsection per command — synopsis, arguments, flags, behaviour,
+    examples with realistic values, and exit behaviour. Precision matters here.
+  cli.output: >
+    Cover: human vs machine output modes, --json schemas, table conventions,
+    quiet/verbose levels, and TTY vs pipe behaviour.
+  cli.errors: >
+    Cover: the exit-code table, error message style, retryable vs fatal
+    classification, and how auth/network/user errors present.
+  config: >
+    Cover: file locations and format, per-project vs per-user settings, the
+    full option reference, and migration/defaulting rules.
+  auth: >
+    Cover: supported auth methods, the default path for a first-time user,
+    credential storage/refresh, and multi-account handling.
+  security: >
+    Cover: permission model, least-privilege guidance, what is logged or sent
+    where, and handling of secrets in flags/env/files.
+  distribution: >
+    Cover: install channels, supported platforms/versions, upgrade path, and
+    release cadence.
+  non-functional: >
+    Cover: startup-time and latency budgets, resource limits, offline
+    behaviour, and reliability expectations — each measurable.

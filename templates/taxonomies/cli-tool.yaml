@@ -1,0 +1,155 @@
+# Section taxonomy for a command-line tool specification.
+# Sections start at maturity `none`; coverage treats missing ones as blanks.
+archetype: cli-tool
+description: A CLI product — commands, flags, config, auth, distribution.
+
+workfiles:
+  - path: 00-overview.md
+    title: Overview
+  - path: 10-users-and-jobs.md
+    title: Users and jobs
+  - path: 20-requirements.md
+    title: Functional requirements
+  - path: 30-architecture.md
+    title: Architecture
+  - path: 40-cli-reference.md
+    title: CLI reference
+  - path: 50-auth-and-config.md
+    title: Authentication and configuration
+  - path: 90-non-functional.md
+    title: Non-functional requirements
+
+sections:
+  - id: overview
+    title: Overview and problem statement
+    workfile: 00-overview.md
+    heading: Overview and problem statement
+    depends_on: []
+
+  - id: scope
+    title: Scope and non-goals
+    workfile: 00-overview.md
+    heading: Scope and non-goals
+    depends_on: [overview]
+
+  - id: users-and-jobs
+    title: Users and jobs-to-be-done
+    workfile: 10-users-and-jobs.md
+    heading: Users and jobs-to-be-done
+    depends_on: [overview]
+
+  - id: requirements
+    title: Functional requirements
+    workfile: 20-requirements.md
+    heading: Functional requirements
+    depends_on: [users-and-jobs, scope]
+
+  - id: architecture
+    title: Architecture overview
+    workfile: 30-architecture.md
+    heading: Architecture overview
+    depends_on: [requirements]
+
+  - id: cli.global-flags
+    title: Global flags and conventions
+    workfile: 40-cli-reference.md
+    heading: Global flags and conventions
+    depends_on: [overview]
+
+  - id: cli.commands
+    title: Commands
+    workfile: 40-cli-reference.md
+    heading: Commands
+    depends_on: [cli.global-flags]
+
+  - id: cli.output
+    title: Output formats
+    workfile: 40-cli-reference.md
+    heading: Output formats
+    depends_on: [cli.commands]
+
+  - id: cli.errors
+    title: Errors and exit codes
+    workfile: 40-cli-reference.md
+    heading: Errors and exit codes
+    depends_on: [cli.commands]
+
+  - id: config
+    title: Configuration
+    workfile: 50-auth-and-config.md
+    heading: Configuration
+    depends_on: [overview]
+
+  - id: auth
+    title: Authentication
+    workfile: 50-auth-and-config.md
+    heading: Authentication
+    depends_on: [config]
+
+  - id: security
+    title: Security and permissions
+    workfile: 90-non-functional.md
+    heading: Security and permissions
+    depends_on: [auth]
+
+  - id: distribution
+    title: Packaging and distribution
+    workfile: 90-non-functional.md
+    heading: Packaging and distribution
+    depends_on: []
+
+  - id: non-functional
+    title: Performance and reliability
+    workfile: 90-non-functional.md
+    heading: Performance and reliability
+    depends_on: [requirements]
+
+# What finalization hands over beyond SPEC.md. Each deliverable names the
+# sections that feed it: a drill on a feeding section is told what the
+# deliverable needs from it (`section guidance`) — a floor, not a ceiling —
+# and finalize writes the file once every feeding section is agreed/locked.
+# /spec-new re-verifies this list per project (drop, add, rename).
+deliverables:
+  - id: command-reference
+    title: Command reference
+    format: markdown reference, one subsection per command
+    path: command-reference.md
+    description: >-
+      Formal description of every command: synopsis, positional arguments,
+      every flag with type, default, environment variable and repeatability,
+      output formats, exit codes, and one example per command. Complete
+      enough to generate shell completions or man pages from.
+    sections:
+      - cli.global-flags
+      - cli.commands
+      - cli.output
+      - cli.errors
+      - config
+      - auth
+  - id: config-reference
+    title: Configuration reference
+    format: markdown tables
+    path: config-reference.md
+    description: >-
+      Every configuration key and environment variable with type, default,
+      precedence (flag > env > file > default), file locations per platform,
+      and the credential/secret handling rules.
+    sections:
+      - cli.global-flags
+      - config
+      - auth
+      - security
+  - id: install-guide
+    title: Installation and first-run guide
+    format: markdown guide
+    path: install-guide.md
+    description: >-
+      How a new user gets from nothing to a first successful command:
+      supported platforms and install channels, authentication setup,
+      minimal configuration, verification, and upgrade/uninstall.
+    sections:
+      - users-and-jobs
+      - distribution
+      - auth
+      - config
+      - cli.commands

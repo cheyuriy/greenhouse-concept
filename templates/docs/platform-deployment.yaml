@@ -1,0 +1,109 @@
+# Per-section drafting guidance for the platform-deployment archetype.
+# Inserted as HTML comments into scaffolded workfiles; the drill loop and
+# spec-critic use these as the local definition of "complete".
+sections:
+  overview: >
+    Cover: the capability gap in one paragraph, why self-hosting (vs SaaS or
+    doing without) is on the table, who is asking for it, and why now. No
+    solutions or product names beyond naming the candidate platform.
+  scope: >
+    Cover: which platform capabilities are IN scope for this deployment, what
+    is explicitly OUT with a reason (features not enabled, tenants not served),
+    and what is deferred-not-rejected.
+  consumers: >
+    Cover: each group that will use the deployed platform, the jobs they hire
+    it for, their current workaround, and expected usage volume/shape. Quote
+    real evidence when a source is on file.
+  platform-selection: >
+    Cover: the chosen product and why, the exact edition/version and licensing
+    terms, alternatives considered with rejection reasons (cite idea ids), and
+    the vendor-dependence risks accepted (release cadence, support model).
+  requirements: >
+    Cover: numbered REQ-<SECTION>-<NNN> requirements with RFC-2119 keywords and
+    an Acceptance: criterion each — on the DEPLOYMENT (availability,
+    integration, isolation, compliance), not on the product's own features.
+  topology: >
+    Cover: the platform's components as deployed (which are enabled, replicas),
+    where each runs (cluster, VM, managed service), what talks to what, and
+    the reasoning for the shape (link ADRs via why-markers).
+  infra-dependencies: >
+    Cover: every piece of infrastructure the deployment sits on — k8s/compute,
+    databases, queues, object storage, DNS, certificate authority — with
+    version constraints and who owns each.
+  environments: >
+    Cover: the environment set (dev/staging/prod or other), what differs
+    between them (sizing, data, integrations), and the promotion path for both
+    platform upgrades and configuration changes.
+  networking: >
+    Cover: ingress and DNS names, TLS termination, private vs public
+    connectivity, firewall/peering requirements, and ports/protocols between
+    components and to integrated systems.
+  access.identity: >
+    Cover: the identity provider integration (SSO protocol, provisioning/
+    deprovisioning), service accounts and their credentials, and the
+    first-login experience for a new user.
+  access.permissions: >
+    Cover: the role model inside the platform, the mapping from IdP groups to
+    platform roles, who may administer vs use vs view, and how access requests
+    and reviews happen.
+  integrations.conventions: >
+    Cover: how each integration is specified (direction, auth method, data
+    exchanged, failure behaviour), naming conventions, and the default posture
+    (least privilege, egress rules) every integration inherits.
+  integrations.systems: >
+    Cover: one subsection per integrated system — warehouse, git provider,
+    artifact registry, notification channels, schedulers — each following the
+    conventions section's template with concrete endpoints and owners.
+    Precision matters here.
+  secrets: >
+    Cover: where the deployment's secrets live (secrets manager), how the
+    platform consumes them (injection, sync), rotation expectations, and what
+    must never appear in config files or logs.
+  config-management: >
+    Cover: how platform configuration is expressed as code (helm values,
+    terraform, app config files), where it is versioned, how drift between
+    declared and live config is detected, and who may change what.
+  state: >
+    Cover: what state the platform holds (metadata DB, queues, artifacts,
+    logs), which backing stores hold it, data classification/retention, and
+    what is disposable vs must survive a rebuild.
+  lifecycle.provisioning: >
+    Cover: how a complete environment is created from scratch — tooling,
+    order of operations, manual steps that remain — and how long a full
+    rebuild takes.
+  lifecycle.upgrades: >
+    Cover: how upstream releases are tracked, the upgrade cadence and window,
+    pre-upgrade checks (changelog review, staging soak), and handling of
+    breaking changes and deprecations.
+  lifecycle.rollback: >
+    Cover: how a failed upgrade or config change is reverted, whether state
+    migrations make rollback impossible past certain versions, and the
+    decision criteria for roll back vs fix forward.
+  lifecycle.decommission: >
+    Cover: the exit path — exporting state, migrating consumers off, revoking
+    integrations and credentials, and destroying infrastructure — so vendor
+    lock-in is a known, priced risk.
+  observability.monitoring: >
+    Cover: the metrics that indicate platform health (own metrics and the
+    product's built-ins), where dashboards live, and how monitoring hooks into
+    the org's existing stack.
+  observability.alerting: >
+    Cover: alert conditions with thresholds, routing (who is paged, who is
+    informed), severity levels, and which product-internal alerts are
+    forwarded vs suppressed.
+  observability.logs: >
+    Cover: which logs are collected (platform, access, audit), where they are
+    shipped, retention periods, and how a debugging session finds the logs for
+    one failed run/job.
+  security: >
+    Cover: hardening applied relative to the product's defaults, patching and
+    CVE-response expectations, network exposure review, and what is logged or
+    sent to the vendor (telemetry).
+  slo: >
+    Cover: availability and performance targets for the deployment, measured
+    how, the ownership model (team, on-call rotation, support hours), and the
+    escalation path to the vendor/community.
+  runbook: >
+    Cover: the known failure modes and their symptoms, step-by-step recovery
+    procedures, links from alerts to procedures, and the disaster scenario
+    walkthrough (loss of a component, loss of state).
