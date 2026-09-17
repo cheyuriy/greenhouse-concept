@@ -189,6 +189,19 @@ Commit when a significant step completes — you decide when, by this definition
   the partial state as `spec(<project>): wip — <what's in flight>` (with a
   session log) before stopping — the next session may resolve to a different
   project, and leftover changes would tangle two projects into one commit.
+- **Sync the workspace repo before touching state.** The workspace normally
+  lives in its own repo, often edited from more than one machine. When that
+  repo has a remote (`git -C "$(uv run greenhouse root)" remote` prints
+  one), the first thing a session does after resolving the project — before
+  `coverage`, `trace`, or any write — is `git -C "$(uv run greenhouse root)"
+  pull --ff-only`, so the session starts from the latest state instead of
+  producing a conflicting commit. Settle a leftover dirty tree first (see
+  above), never stash around it. A refused fast-forward (diverged branch, no
+  upstream) is stopped on and shown to the user, never merged or rebased
+  silently. The complement: after the session's last spec commit, `git -C
+  "$(uv run greenhouse root)" push` when a remote exists, so the next machine
+  finds this work. No remote (the legacy fallback under this checkout, or a
+  purely local workspace) → nothing to sync; say so once and continue.
 - **Git never runs inside `greenhouse`.** Every `git add`/`git commit` is a
   visible line in a skill; the CLI only prints what the commit needs. Run every
   git call as `git -C "$(uv run greenhouse root)"`: `root` prints the git root

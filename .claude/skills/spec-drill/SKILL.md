@@ -152,6 +152,7 @@ uv run greenhouse session commit "$SID"                   # records HEAD's sha, 
 git -C "$ROOT" add "$DIR"
 git -C "$ROOT" commit -q -m "spec(<project>): attach commit hash to session $SID"
 git -C "$ROOT" status --short                             # must print nothing
+if [ -n "$(git -C "$ROOT" remote)" ]; then git -C "$ROOT" push -q; fi   # other machines pick this up
 ```
 
 Add any session-attribution trailer the harness asks for via

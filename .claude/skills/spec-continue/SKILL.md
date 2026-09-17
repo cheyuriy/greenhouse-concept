@@ -31,6 +31,22 @@ project get their own `spec(<other-project>): …` commit (typically
 frontmatter sha-attachment residue → `spec(<p>): attach commit hash to
 session <id>`), never mixed into this project's commits.
 
+Then bring the workspace repo up to date (CLAUDE.md git protocol) — the
+same project may have been worked on from another machine, and a stale
+checkout means a conflicting commit later:
+
+```bash
+ROOT="$(uv run greenhouse root)"
+if [ -n "$(git -C "$ROOT" remote)" ]; then git -C "$ROOT" pull --ff-only; fi
+```
+
+Do this before `coverage` (the numbers above must describe the pulled
+state; re-run them if the pull brought anything). No remote → say "workspace
+has no remote, nothing to sync" once and move on. A refused fast-forward
+(diverged, no upstream) is reported to the user as the first item of the
+brief and blocks new work until they decide; never merge, rebase, or stash
+on their behalf.
+
 ## 2. Brief the user
 
 A compact picture, not a dump: maturity histogram in one line, then the 3–5
